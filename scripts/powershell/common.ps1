@@ -2,6 +2,11 @@
 # Common PowerShell functions analogous to common.sh
 
 function Get-RepoRoot {
+    # Check if current working directory has .specify folder first
+    if (Test-Path (Join-Path $PWD '.specify')) {
+        return $PWD
+    }
+
     try {
         $result = git rev-parse --show-toplevel 2>$null
         if ($LASTEXITCODE -eq 0) {
@@ -10,7 +15,7 @@ function Get-RepoRoot {
     } catch {
         # Git command failed
     }
-    
+
     # Fall back to script location for non-git repos
     return (Resolve-Path (Join-Path $PSScriptRoot "../../..")).Path
 }

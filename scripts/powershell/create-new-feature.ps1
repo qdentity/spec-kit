@@ -133,16 +133,27 @@ if (-not $fallbackRoot) {
     exit 1
 }
 
-try {
-    $repoRoot = git rev-parse --show-toplevel 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        $hasGit = $true
-    } else {
-        throw "Git not available"
+# Check if current working directory has .specify folder first
+if (Test-Path (Join-Path $PWD '.specify')) {
+    $repoRoot = $PWD
+    try {
+        git rev-parse --show-toplevel 2>$null | Out-Null
+        $hasGit = ($LASTEXITCODE -eq 0)
+    } catch {
+        $hasGit = $false
     }
-} catch {
-    $repoRoot = $fallbackRoot
-    $hasGit = $false
+} else {
+    try {
+        $repoRoot = git rev-parse --show-toplevel 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $hasGit = $true
+        } else {
+            throw "Git not available"
+        }
+    } catch {
+        $repoRoot = $fallbackRoot
+        $hasGit = $false
+    }
 }
 
 Set-Location $repoRoot

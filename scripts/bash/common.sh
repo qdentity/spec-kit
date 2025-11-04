@@ -3,7 +3,10 @@
 
 # Get repository root, with fallback for non-git repositories
 get_repo_root() {
-    if git rev-parse --show-toplevel >/dev/null 2>&1; then
+    # Check if current working directory has .specify folder first
+    if [ -d "$PWD/.specify" ]; then
+        echo "$PWD"
+    elif git rev-parse --show-toplevel >/dev/null 2>&1; then
         git rev-parse --show-toplevel
     else
         # Fall back to script location for non-git repos

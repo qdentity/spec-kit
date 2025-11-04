@@ -116,7 +116,15 @@ check_existing_branches() {
 # were initialised with --no-git.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if git rev-parse --show-toplevel >/dev/null 2>&1; then
+# Check if current working directory has .specify folder first
+if [ -d "$PWD/.specify" ]; then
+    REPO_ROOT="$PWD"
+    if git rev-parse --show-toplevel >/dev/null 2>&1; then
+        HAS_GIT=true
+    else
+        HAS_GIT=false
+    fi
+elif git rev-parse --show-toplevel >/dev/null 2>&1; then
     REPO_ROOT=$(git rev-parse --show-toplevel)
     HAS_GIT=true
 else
